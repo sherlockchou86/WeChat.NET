@@ -1,0 +1,15 @@
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\bin\Debug\WeChat.NET.exe.config
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\bin\Debug\WeChat.NET.exe
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\bin\Debug\WeChat.NET.pdb
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\bin\Debug\Newtonsoft.Json.dll
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\bin\Debug\WebKitBrowser.dll
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.Controls.WChatBox.resources
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.Controls.WFriendsList.resources
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.Controls.WPersonalInfo.resources
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.frmLogin.resources
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.frmMainForm.resources
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.Properties.Resources.resources
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.csproj.GenerateResource.Cache
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.exe
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.pdb
+D:\周智2011\Githubs\WeChat.NET\WeChat.NET\obj\x86\Debug\WeChat.NET.Controls.WChatList.resources

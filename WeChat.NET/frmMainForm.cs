@@ -306,6 +306,7 @@ namespace WeChat.NET
                             }
                         }
                     }
+                    System.Threading.Thread.Sleep(10);
                 }
 
             })).BeginInvoke(null, null);

@@ -77,14 +77,14 @@ namespace WeChat.NET.Controls
 
                             string latest_msg = list_unread[list_unread.Count - 1].Msg.ToString();  //最后一条未读消息
                             latest_msg = latest_msg.Length <= 10 ? latest_msg : latest_msg.Substring(0, 10) + "...";
-                            latest_msg = "[" + (list_unread.Count < 10 ? list_unread.Count.ToString() : "*") + "条] " + latest_msg;
+                            latest_msg = "[" + list_unread.Count + "条] " + latest_msg;
                             Size latest_msg_size = TextRenderer.MeasureText(latest_msg, f2);
                             e.Graphics.DrawString(latest_msg, f2, new SolidBrush(Color.FromArgb(37, 37, 37)), new PointF(bound.X + 70, bound.Y + 40));
                         }
                         using (Font f3 = new Font("微软雅黑", 8))  //未读消息条数  小红圆点
                         {
                             e.Graphics.FillEllipse(Brushes.Red, new Rectangle(bound.X + 10 + 50 - 9, bound.Y + 10 - 9, 18, 18));
-                            e.Graphics.DrawString(list_unread.Count.ToString(), f3, Brushes.White, new PointF(bound.X + 10 + 50 - 5, bound.Y + 10 - 7));
+                            e.Graphics.DrawString((list_unread.Count < 10 ? list_unread.Count.ToString() : "*"), f3, Brushes.White, new PointF(bound.X + 10 + 50 - 5, bound.Y + 10 - 7));
                         }
                     }
                     else //否则 显示最新的一条消息

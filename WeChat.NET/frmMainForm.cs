@@ -84,9 +84,9 @@ namespace WeChat.NET
         void _friendInfo_StartChat(WXUser user)
         {
             _chat2friend.Visible = true;
-            _chat2friend.FriendUser = user;
-            _chat2friend.MeUser = _me;
             _chat2friend.BringToFront();
+            _chat2friend.MeUser = _me;
+            _chat2friend.FriendUser = user;
         }
         /// <summary>
         /// 聊天对话框中点击 好友信息
@@ -105,9 +105,9 @@ namespace WeChat.NET
         private void wchatlist_StartChat(WXUser user)
         {
             _chat2friend.Visible = true;
-            _chat2friend.FriendUser = user;
-            _chat2friend.MeUser = _me;
             _chat2friend.BringToFront();
+            _chat2friend.MeUser = _me;
+            _chat2friend.FriendUser = user;
         }
         /// <summary>
         /// 通讯录中点击好友 查看好友信息
@@ -224,25 +224,87 @@ namespace WeChat.NET
                 while (true)
                 {
                     sync_flag = wxs.WxSyncCheck();  //同步检查
-                    if (sync_flag.Contains("selector:\"0\""))  //
+                    if (sync_flag == null)
                     {
-
+                        continue;
                     }
-                    else if (sync_flag.Contains("selector:\"2\"")) //有消息
+                    //这里应该判断 sync_flag中selector的值
+                    else //有消息
                     {
                         sync_result = wxs.WxSync();  //进行同步
                         if (sync_result != null)
                         {
+                            if (sync_result["AddMsgCount"] != null && sync_result["AddMsgCount"].ToString() != "0")
+                            {
+                                foreach (JObject m in sync_result["AddMsgList"])
+                                {
+                                    string from = m["FromUserName"].ToString();
+                                    string to = m["ToUserName"].ToString();
+                                    string content = m["Content"].ToString();
+                                    string type = m["MsgType"].ToString();
 
+                                    WXMsg msg = new WXMsg();
+                                    msg.From = from;
+                                    msg.Msg = type == "1" ? content : "请在其他设备上查看消息";  //只接受文本消息
+                                    msg.Readed = false;
+                                    msg.Time = DateTime.Now;
+                                    msg.To = to;
+                                    msg.Type = int.Parse(type);
+
+                                    if (msg.Type == 51)  //屏蔽一些系统数据
+                                    {
+                                        continue;
+                                    }
+                                    this.BeginInvoke((Action)delegate()
+                                    {
+                                        WXUser user; bool exist_latest_contact = false;
+                                        foreach (Object u in wChatList1.Items)
+                                        {
+                                            user = u as WXUser;
+                                            if (user != null)
+                                            {
+                                                if (user.UserName == msg.From && msg.To == _me.UserName)  //接收别人消息
+                                                {
+                                                    wChatList1.Items.Remove(user);
+                                                    wChatList1.Items.Insert(0, user);
+                                                    exist_latest_contact = true;
+                                                    user.ReceiveMsg(msg);
+                                                    break;
+                                                }
+                                                else if (user.UserName == msg.To && msg.From == _me.UserName)  //同步自己在其他设备上发送的消息
+                                                {
+                                                    wChatList1.Items.Remove(user);
+                                                    wChatList1.Items.Insert(0, user);
+                                                    exist_latest_contact = true;
+                                                    user.SendMsg(msg,true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (!exist_latest_contact)
+                                        {
+                                            foreach (object o in wFriendsList1.Items)
+                                            {
+                                                WXUser friend = o as WXUser;
+                                                if (friend != null && friend.UserName == msg.From && msg.To == _me.UserName)
+                                                {
+                                                    wChatList1.Items.Insert(0, friend);
+                                                    friend.ReceiveMsg(msg);
+                                                    break;
+                                                }
+                                                if (friend != null && friend.UserName == msg.To && msg.From == _me.UserName)
+                                                {
+                                                    wChatList1.Items.Insert(0, friend);
+                                                    friend.SendMsg(msg,true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        wChatList1.Invalidate();
+                                    });
+                                }
+                            }
                         }
-                    }
-                    else if (sync_flag.Contains("selector:\"0\""))
-                    {
-
-                    }
-                    else
-                    {
-
                     }
                 }
 

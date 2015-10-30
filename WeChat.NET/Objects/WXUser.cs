@@ -233,11 +233,14 @@ namespace WeChat.NET.Objects
         /// 向该用户发送消息
         /// </summary>
         /// <param name="msg"></param>
-        public void SendMsg(WXMsg msg)
+        public void SendMsg(WXMsg msg, bool showOnly)
         {
             //发送
-            WXService wxs = new WXService();
-            wxs.SendMsg(msg.Msg, msg.From, msg.To, msg.Type);
+            if (!showOnly)
+            {
+                WXService wxs = new WXService();
+                wxs.SendMsg(msg.Msg, msg.From, msg.To, msg.Type);
+            }
 
             _sentMsg.Add(msg.Time, msg);
             if (MsgSent != null)

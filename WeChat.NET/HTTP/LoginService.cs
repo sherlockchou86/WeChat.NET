@@ -13,6 +13,7 @@ namespace WeChat.NET.HTTP
     class LoginService
     {
         public static string Pass_Ticket = "";
+        public static string SKey = "";
         private static string _session_id = null;
 
         //获取会话ID的URL
@@ -73,6 +74,7 @@ namespace WeChat.NET.HTTP
             byte[] bytes = BaseService.SendGetRequest(login_redirect + "&fun=new&version=v2&lang=zh_CN");
             string pass_ticket = Encoding.UTF8.GetString(bytes);
             Pass_Ticket = pass_ticket.Split(new string[] { "pass_ticket" }, StringSplitOptions.None)[1].TrimStart('>').TrimEnd('<', '/');
+            SKey = pass_ticket.Split(new string[] { "skey" }, StringSplitOptions.None)[1].TrimStart('>').TrimEnd('<', '/');
         }
     }
 }

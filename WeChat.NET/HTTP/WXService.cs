@@ -26,7 +26,7 @@ namespace WeChat.NET.HTTP
         //获取好友列表
         private static string _getcontact_url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact";
         //同步检查url
-        private static string _synccheck_url = "https://webpush.weixin.qq.com/cgi-bin/mmwebwx-bin/synccheck?sid={0}&uin={1}&synckey={2}";
+        private static string _synccheck_url = "https://webpush.weixin.qq.com/cgi-bin/mmwebwx-bin/synccheck?sid={0}&uin={1}&synckey={2}&r={3}&skey={4}&deviceid={5}";
         //同步url
         private static string _sync_url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsync?sid=";
         //发送消息url
@@ -54,7 +54,6 @@ namespace WeChat.NET.HTTP
                 {
                     _syncKey.Add(synckey["Key"].ToString(), synckey["Val"].ToString());
                 }
-
                 return init_result;
             }
             else
@@ -113,10 +112,17 @@ namespace WeChat.NET.HTTP
 
             if (sid != null && uin != null)
             {
-                _synccheck_url = string.Format(_synccheck_url, sid.Value, uin.Value, sync_key);
+                _synccheck_url = string.Format(_synccheck_url, sid.Value, uin.Value, sync_key, (long)(DateTime.Now.ToUniversalTime() - new System.DateTime(1970, 1, 1)).TotalMilliseconds, LoginService.SKey.Replace("@", "%40"), "e1615250492");
 
-                byte[] bytes = BaseService.SendGetRequest(_synccheck_url);
-                return Encoding.UTF8.GetString(bytes);
+                byte[] bytes = BaseService.SendGetRequest(_synccheck_url +"&_=" + DateTime.Now.Ticks);
+                if (bytes != null)
+                {
+                    return Encoding.UTF8.GetString(bytes);
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
@@ -129,29 +135,32 @@ namespace WeChat.NET.HTTP
         /// <returns></returns>
         public JObject WxSync()
         {
-            string sync_json = "{{\"BaseRequest\" : {{\"Uin\":\"{0}\",\"Sid\":\"{1}\"}},\"SyncKey\" : {{\"Count\":{2},\"List\":[{3}]}},\"rr\" :1377482079876}}";
+            string sync_json = "{{\"BaseRequest\" : {{\"DeviceID\":\"e1615250492\",\"Sid\":\"{1}\", \"Skey\":\"{5}\", \"Uin\":\"{0}\"}},\"SyncKey\" : {{\"Count\":{2},\"List\":[{3}]}},\"rr\" :{4}}}";
             Cookie sid = BaseService.GetCookie("wxsid");
             Cookie uin = BaseService.GetCookie("wxuin");
 
             string sync_keys = "";
             foreach (KeyValuePair<string, string> p in _syncKey)
             {
-                sync_keys += "{\"" + p.Key + "\":" + p.Value + "},";
+                sync_keys += "{\"Key\":" + p.Key + ",\"Val\":" + p.Value + "},";
             }
             sync_keys = sync_keys.TrimEnd(',');
-            sync_json = string.Format(sync_json, uin.Value, sid.Value, _syncKey.Count, sync_keys);
+            sync_json = string.Format(sync_json, uin.Value, sid.Value, _syncKey.Count, sync_keys, (long)(DateTime.Now.ToUniversalTime() - new System.DateTime(1970, 1, 1)).TotalMilliseconds, LoginService.SKey);
 
             if (sid != null && uin != null)
             {
-                byte[] bytes = BaseService.SendGetRequest(_sync_url + sid.Value);
+                byte[] bytes = BaseService.SendPostRequest(_sync_url + sid.Value + "&lang=zh_CN&skey=" + LoginService.SKey + "&pass_ticket=" + LoginService.Pass_Ticket, sync_json);
                 string sync_str = Encoding.UTF8.GetString(bytes);
 
                 JObject sync_resul = JsonConvert.DeserializeObject(sync_str) as JObject;
 
-                _syncKey.Clear();
-                foreach (JObject key in sync_resul["SyncKey"]["List"])
+                if (sync_resul["SyncKey"]["Count"].ToString() != "0")
                 {
-                    _syncKey.Add(key["Key"].ToString(), key["Val"].ToString());
+                    _syncKey.Clear();
+                    foreach (JObject key in sync_resul["SyncKey"]["List"])
+                    {
+                        _syncKey.Add(key["Key"].ToString(), key["Val"].ToString());
+                    }
                 }
                 return sync_resul;
             }
@@ -173,18 +182,18 @@ namespace WeChat.NET.HTTP
             "\"BaseRequest\":{{" +
                 "\"DeviceID\" : \"e441551176\"," +
                 "\"Sid\" : \"{0}\"," +
-                "\"Skey\" : \"F820928BBA5D8ECA23448F076D2E8A915E1349E9FB4F4332\"," +
+                "\"Skey\" : \"{6}\"," +
                 "\"Uin\" : \"{1}\"" +
             "}}," +
             "\"Msg\" : {{" +
-                "\"ClientMsgId\" : 1377504862158," +
+                "\"ClientMsgId\" : {8}," +
                 "\"Content\" : \"{2}\"," +
                 "\"FromUserName\" : \"{3}\"," +
-                "\"LocalID\" : 1377504862158," +
+                "\"LocalID\" : {9}," +
                 "\"ToUserName\" : \"{4}\"," +
                 "\"Type\" : {5}" +
             "}}," +
-            "\"rr\" : 1377504864463" +
+            "\"rr\" : {7}" +
             "}}";
 
             Cookie sid = BaseService.GetCookie("wxsid");
@@ -192,9 +201,9 @@ namespace WeChat.NET.HTTP
 
             if (sid != null && uin != null)
             {
-                msg_json = string.Format(msg_json, sid.Value, uin.Value, msg, from, to, type);
+                msg_json = string.Format(msg_json, sid.Value, uin.Value, msg, from, to, type, LoginService.SKey, DateTime.Now.Millisecond, DateTime.Now.Millisecond, DateTime.Now.Millisecond);
 
-                byte[] bytes = BaseService.SendPostRequest(_sendmsg_url + sid.Value + "", msg_json);
+                byte[] bytes = BaseService.SendPostRequest(_sendmsg_url + sid.Value + "&lang=zh_CN&pass_ticket="+LoginService.Pass_Ticket, msg_json);
 
                 string send_result = Encoding.UTF8.GetString(bytes);
             }

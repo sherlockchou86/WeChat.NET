@@ -46,6 +46,15 @@ namespace WeChat.NET.Controls
                         _friendUser.MsgRecved += new MsgRecvedEventHandler(_friendUser_MsgRecved);
                         _friendUser.MsgSent += new MsgSentEventHandler(_friendUser_MsgSent);
 
+                        if (_friendUser.Icon != null)  //头像信息
+                        {
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                _friendUser.Icon.Save(ms, ImageFormat.Png);
+                                _friend_base64 = "data:img/jpg;base64," + Convert.ToBase64String(ms.ToArray());
+                            }
+                        }
+
                         webKitBrowser1.DocumentText = _totalHtml = "";
 
                         lblInfo.Text = "与 " + _friendUser.ShowName + " 聊天中";
@@ -63,15 +72,6 @@ namespace WeChat.NET.Controls
                                 ShowSendMsg(p.Value);
                             }
                             p.Value.Readed = true;
-                        }
-
-                        if (_friendUser.Icon != null)  //头像信息
-                        {
-                            using (MemoryStream ms = new MemoryStream())
-                            {
-                                _friendUser.Icon.Save(ms, ImageFormat.Png);
-                                _friend_base64 = "data:img/jpg;base64," + Convert.ToBase64String(ms.ToArray());
-                            }
                         }
                     }
                 }
@@ -149,8 +149,8 @@ namespace WeChat.NET.Controls
                 msg.To = _friendUser.UserName;
                 msg.Type = 1;
                 msg.Time = DateTime.Now;
-                
-                _friendUser.SendMsg(msg);
+
+                _friendUser.SendMsg(msg, false);
             }
         }
         /// <summary>
@@ -204,6 +204,10 @@ namespace WeChat.NET.Controls
         /// </summary>
         private void ShowSendMsg(WXMsg msg)
         {
+            if (_meUser == null || _friendUser == null)
+            {
+                return;
+            }
             string str = @"<script type=""text/javascript"">window.location.hash = ""#ok"";</script> 
             <div class=""chat_content_group self"">   
             <img class=""chat_content_avatar"" src=""" + _me_base64 + @""" width=""40px"" height=""40px"">  
@@ -221,6 +225,10 @@ namespace WeChat.NET.Controls
         /// </summary>
         private void ShowReceiveMsg(WXMsg msg)
         {
+            if (_meUser == null || _friendUser == null)
+            {
+                return;
+            }
             string str = @"<script type=""text/javascript"">window.location.hash = ""#ok"";</script> 
             <div class=""chat_content_group buddy"">   
             <img class=""chat_content_avatar"" src=""" + _friend_base64 + @""" width=""40px"" height=""40px"">  
@@ -231,6 +239,7 @@ namespace WeChat.NET.Controls
             {
                 _totalHtml = _baseHtml;
             }
+            msg.Readed = true;
             webKitBrowser1.DocumentText = _totalHtml = _totalHtml.Replace("<a id='ok'></a>", "") + str;
         }
         private string _totalHtml = "";

@@ -1,10 +1,10 @@
-#WeChat.NET#
+# WeChat.NET #
 --------------------
 WeChat.NET is based on web wechat.http://wx.qq.com
 
 see more: http://www.cnblogs.com/xiaozhi_5638
 
-##overview##
+## overview ##
 nothing here but a few screenshots:
 
 - ![][0]
@@ -15,7 +15,7 @@ nothing here but a few screenshots:
 - ![][5]
 - ![][6]
 
-##can do and cant do##
+## can do and cant do ##
 **can do**
 - login with qrcode;
 - load latest contacts;
@@ -28,7 +28,7 @@ nothing here but a few screenshots:
 - cant send msg except string;
 - cant scan friends' status;
 
-##step by step##
+## step by step ##
 
 1. get session id. like "gZ3bQtahGg==";
 2. get qrcode using session id;
@@ -38,7 +38,7 @@ nothing here but a few screenshots:
 6. loading all friends;
 7. check the status continuously.
 
-##thanks and references##
+## thanks and references ##
 1. json.net
 2. webkit.net
 3. wx.qq.com

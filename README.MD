@@ -7,8 +7,7 @@ see more: http://www.cnblogs.com/xiaozhi_5638
 ## overview ##
 nothing here but a few screenshots:
 
-- ![][2]
-- ![][3]
+![][2] ![][3]
 
 ## can do and cant do ##
 **can do**
